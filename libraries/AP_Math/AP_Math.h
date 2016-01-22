@@ -108,6 +108,21 @@ uint32_t                get_distance_cm(const struct Location &loc1, const struc
 // return bearing in centi-degrees between two locations
 int32_t                 get_bearing_cd(const struct Location &loc1, const struct Location &loc2);
 
+// return determinant of square matrix
+float                   detnxn(const float C[], const uint8_t n);
+
+// Output inverted nxn matrix when returns true, otherwise matrix is Singular
+bool                    inversenxn(const float x[], float y[], const uint8_t n);
+
+// invOut is an inverted 4x4 matrix when returns true, otherwise matrix is Singular
+bool                    inverse3x3(float m[], float invOut[]);
+
+// invOut is an inverted 3x3 matrix when returns true, otherwise matrix is Singular
+bool                    inverse4x4(float m[],float invOut[]);
+
+// matrix multiplication of two NxN matrices
+float* mat_mul(float *A, float *B, uint8_t n);
+
 // see if location is past a line perpendicular to
 // the line between point1 and point2. If point1 is
 // our previous waypoint and point2 is our target waypoint
@@ -168,22 +183,54 @@ void wgsecef2llh(const Vector3d &ecef, Vector3d &llh);
 #endif
 
 // constrain a value
-float   constrain_float(float amt, float low, float high);
-int16_t constrain_int16(int16_t amt, int16_t low, int16_t high);
-int32_t constrain_int32(int32_t amt, int32_t low, int32_t high);
+static inline float constrain_float(float amt, float low, float high)
+{
+	// the check for NaN as a float prevents propogation of
+	// floating point errors through any function that uses
+	// constrain_float(). The normal float semantics already handle -Inf
+	// and +Inf
+	if (isnan(amt)) {
+		return (low+high)*0.5f;
+	}
+	return ((amt)<(low)?(low):((amt)>(high)?(high):(amt)));
+}
+// constrain a int16_t value
+static inline int16_t constrain_int16(int16_t amt, int16_t low, int16_t high) {
+	return ((amt)<(low)?(low):((amt)>(high)?(high):(amt)));
+}
+
+// constrain a int32_t value
+static inline int32_t constrain_int32(int32_t amt, int32_t low, int32_t high) {
+	return ((amt)<(low)?(low):((amt)>(high)?(high):(amt)));
+}
+
+//matrix algebra
+bool inverse(float x[], float y[], uint16_t dim);
 
 // degrees -> radians
-float radians(float deg);
+static inline float radians(float deg) {
+	return deg * DEG_TO_RAD;
+}
 
 // radians -> degrees
-float degrees(float rad);
+static inline float degrees(float rad) {
+	return rad * RAD_TO_DEG;
+}
 
 // square
-float sq(float v);
+static inline float sq(float v) {
+	return v*v;
+}
 
-// sqrt of sum of squares
-float pythagorous2(float a, float b);
-float pythagorous3(float a, float b, float c);
+// 2D vector length
+static inline float pythagorous2(float a, float b) {
+	return sqrtf(sq(a)+sq(b));
+}
+
+// 3D vector length
+static inline float pythagorous3(float a, float b, float c) {
+	return sqrtf(sq(a)+sq(b)+sq(c));
+}
 
 #ifdef radians
 #error "Build is including Arduino base headers"

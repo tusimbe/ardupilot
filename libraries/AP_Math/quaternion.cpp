@@ -17,6 +17,8 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#pragma GCC optimize("O3")
+
 #include "AP_Math.h"
 
 // return the rotation matrix equivalent for this quaternion
@@ -289,10 +291,10 @@ Quaternion Quaternion::operator*(const Quaternion &v) const {
 }
 
 Quaternion &Quaternion::operator*=(const Quaternion &v) {
-    float &w1 = q1;
-    float &x1 = q2;
-    float &y1 = q3;
-    float &z1 = q4;
+    float w1 = q1;
+    float x1 = q2;
+    float y1 = q3;
+    float z1 = q4;
 
     float w2 = v.q1;
     float x2 = v.q2;
