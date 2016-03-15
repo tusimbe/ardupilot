@@ -189,6 +189,57 @@ void RGBLed::update_colours(void)
         return;
     }
 
+#ifdef CONFIG_ARCH_BOARD_PX4FMU_V3
+
+    // double flash yellow
+    if (AP_Notify::flags.compass_cal_running){
+		// double flash blue
+        switch(step) {
+            case 0:
+            case 1:
+            case 4:
+            case 5:
+                // blue on
+                _red_des = _led_off;
+                _blue_des = brightness;
+                _green_des = _led_off;
+                break;
+            case 2:
+            case 3:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+                // all off
+                _red_des = _led_off;
+                _blue_des = _led_off;
+                _green_des = _led_off;
+                break;
+        }
+
+		return;
+	}
+
+	if (AP_Notify::flags.compass_cal_failed){
+        // red on
+		_red_des = brightness;
+        _blue_des = _led_off;
+        _green_des = _led_off;
+                
+		return;
+	}
+
+	if (AP_Notify::flags.compass_cal_saved){
+        // green on
+		_red_des = _led_off;
+        _blue_des = _led_off;
+        _green_des = brightness;
+                
+		return;
+	}
+	
+#endif
+
     // solid green or blue if armed
     if (AP_Notify::flags.armed) {
         // solid green if armed with GPS 3d lock

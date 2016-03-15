@@ -16,15 +16,20 @@ Compass::compass_cal_update()
         _calibrator[i].update(failure);
         if (failure) {
             AP_Notify::events.compass_cal_failed = 1;
+			AP_Notify::flags.compass_cal_failed = 1;
         }
 
         if (_calibrator[i].check_for_timeout()) {
             AP_Notify::events.compass_cal_failed = 1;
+			AP_Notify::flags.compass_cal_failed = 1;
             cancel_calibration_all();
         }
 
         if (_calibrator[i].running()) {
             running = true;
+
+            AP_Notify::flags.compass_cal_saved= 0;
+			AP_Notify::flags.compass_cal_failed = 0;
         }
     }
 
@@ -136,6 +141,7 @@ Compass::accept_calibration(uint8_t i)
 
         if (!is_calibrating()) {
             AP_Notify::events.compass_cal_saved = 1;
+			AP_Notify::flags.compass_cal_saved = 1;
         }
         return true;
     } else {
