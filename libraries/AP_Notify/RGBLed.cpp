@@ -151,46 +151,9 @@ void RGBLed::update_colours(void)
         return;
     }
 
-    // radio and battery failsafe patter: flash yellow
-    // gps failsafe pattern : flashing yellow and blue
-    // ekf_bad pattern : flashing yellow and red
-    if (AP_Notify::flags.failsafe_radio || AP_Notify::flags.failsafe_battery ||
-            AP_Notify::flags.ekf_bad) {
-        switch(step) {
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-                // yellow on
-                _red_des = brightness;
-                _blue_des = _led_off;
-                _green_des = brightness;
-                break;
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-                if (AP_Notify::flags.ekf_bad) {
-                    // red on if ekf bad
-                    _red_des = brightness;
-                    _blue_des = _led_off;
-                    _green_des = _led_off;
-                }else{
-                    // all off for radio or battery failsafe
-                    _red_des = _led_off;
-                    _blue_des = _led_off;
-                    _green_des = _led_off;
-                }
-                break;
-        }
-        // exit so no other status modify this pattern
-        return;
-    }
+    #ifdef CONFIG_ARCH_BOARD_PX4FMU_V3
 
-#ifdef CONFIG_ARCH_BOARD_PX4FMU_V3
-
+    // should before failsafe
     // double flash yellow
     if (AP_Notify::flags.compass_cal_running){
 		// double flash blue
@@ -239,6 +202,44 @@ void RGBLed::update_colours(void)
 	}
 	
 #endif
+
+    // radio and battery failsafe patter: flash yellow
+    // gps failsafe pattern : flashing yellow and blue
+    // ekf_bad pattern : flashing yellow and red
+    if (AP_Notify::flags.failsafe_radio || AP_Notify::flags.failsafe_battery ||
+            AP_Notify::flags.ekf_bad) {
+        switch(step) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                // yellow on
+                _red_des = brightness;
+                _blue_des = _led_off;
+                _green_des = brightness;
+                break;
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+                if (AP_Notify::flags.ekf_bad) {
+                    // red on if ekf bad
+                    _red_des = brightness;
+                    _blue_des = _led_off;
+                    _green_des = _led_off;
+                }else{
+                    // all off for radio or battery failsafe
+                    _red_des = _led_off;
+                    _blue_des = _led_off;
+                    _green_des = _led_off;
+                }
+                break;
+        }
+        // exit so no other status modify this pattern
+        return;
+    }
 
     // solid green or blue if armed
     if (AP_Notify::flags.armed) {
