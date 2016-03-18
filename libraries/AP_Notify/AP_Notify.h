@@ -56,6 +56,9 @@ public:
         uint32_t firmware_update    : 1;    // 1 just before vehicle firmware is updated
         uint32_t compass_cal_running: 1;    // 1 if a compass calibration is running
 
+        uint32_t compass_cal_saved  : 1;    // 1 when compass calibration was just saved
+        uint32_t compass_cal_failed : 1;    // 1 when compass calibration has just failed
+
         // additional flags
         uint32_t external_leds      : 1;    // 1 if external LEDs are enabled (normally only used for copter)
         uint32_t vehicle_lost       : 1;    // 1 when lost copter tone is requested (normally only used for copter)
